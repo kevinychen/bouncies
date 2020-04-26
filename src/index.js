@@ -12,7 +12,7 @@ import {
 
 window.decomp = decomp;
 
-var img = document.getElementById('body_eva');
+var img = document.createElement('img');
 img.onload = function () {
     var canvas = document.createElement('canvas');
     canvas.width = img.width;
