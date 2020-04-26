@@ -1,6 +1,14 @@
 import convexHull from 'monotone-convex-hull-2d';
 import decomp from 'poly-decomp';
-import Matter from 'matter-js';
+import {
+    Bodies,
+    Engine,
+    Mouse,
+    MouseConstraint,
+    Render,
+    Runner,
+    World,
+} from 'matter-js';
 
 window.decomp = decomp;
 
@@ -28,10 +36,10 @@ img.onload = function () {
         polygon.push({ x: points[indices[i]][0], y: points[indices[i]][1] });
     }
 
-    let engine = Matter.Engine.create();
+    let engine = Engine.create();
 
     // render
-    let render = Matter.Render.create({
+    let render = Render.create({
         element: document.getElementById('playground'),
         engine: engine,
         options: {
@@ -40,19 +48,41 @@ img.onload = function () {
             wireframes: false
         }
     });
-    Matter.Render.run(render);
+    Render.run(render);
 
-    // runner
-    let runner = Matter.Runner.create();
-    Matter.Runner.run(runner, engine);
-
-    let body = Matter.Bodies.fromVertices(100, 100, polygon, {
+    let body = Bodies.fromVertices(500, 500, polygon, {
         render: {
             sprite: {
                 texture: './images/eva.png'
             }
         }
     });
-    Matter.World.add(engine.world, body);
+    World.add(engine.world, body);
+
+    let ground = Bodies.rectangle(0, 800, 2000, 20, { isStatic: true });
+    World.add(engine.world, ground);
+    let ceiling = Bodies.rectangle(0, 0, 2000, 20, { isStatic: true });
+    World.add(engine.world, ceiling);
+    let leftWall = Bodies.rectangle(0, 800, 20, 800, { isStatic: true });
+    World.add(engine.world, leftWall);
+    let rightWall = Bodies.rectangle(1000, 0, 20, 800, { isStatic: true });
+    World.add(engine.world, rightWall);
+
+    // runner
+    let runner = Runner.create();
+    Runner.run(runner, engine);
+
+    var mouse = Mouse.create(render.canvas);
+    var mouseConstraint = MouseConstraint.create(engine, {
+        mouse: mouse,
+        constraint: {
+            stiffness: 0.2,
+            render: {
+                visible: false
+            }
+        }
+    });
+    World.add(engine.world, mouseConstraint);
+    render.mouse = mouse;
 }
 img.src = "./images/eva.png";
