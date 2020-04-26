@@ -26,7 +26,8 @@ let render = Render.create({
     options: {
         width: WIDTH,
         height: HEIGHT,
-        wireframes: false
+        wireframes: false,
+        background: '#c9e0e1',
     }
 });
 Render.run(render);
