@@ -20,15 +20,27 @@ img.onload = function () {
     canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
 
     var pixelData = canvas.getContext('2d').getImageData(0, 0, img.width, img.height).data;
+    let minX = img.width, maxX = 0, maxY = 0;
     var points = [];
     for (var x = 0; x < img.width; x++) {
         for (var y = 0; y < img.height; y++) {
             var alpha = pixelData[4 * (y * img.width + x) + 3];
             if (alpha > 0) {
                 points.push([x, y]);
+                if (x < minX) {
+                    minX = x;
+                }
+                if (x > maxX) {
+                    maxX = x;
+                }
+                if (y > maxY) {
+                    maxY = y;
+                }
             }
         }
     }
+    points.push([minX, maxY]);
+    points.push([maxX, maxY]);
 
     var indices = convexHull(points);
     let polygon = [];
@@ -43,8 +55,8 @@ img.onload = function () {
         element: document.getElementById('playground'),
         engine: engine,
         options: {
-            width: 1000,
-            height: 800,
+            width: 1400,
+            height: 900,
             wireframes: false
         }
     });
@@ -59,13 +71,13 @@ img.onload = function () {
     });
     World.add(engine.world, body);
 
-    let ground = Bodies.rectangle(0, 800, 2000, 20, { isStatic: true });
+    let ground = Bodies.rectangle(0, 900, 2800, 100, { isStatic: true });
     World.add(engine.world, ground);
-    let ceiling = Bodies.rectangle(0, 0, 2000, 20, { isStatic: true });
+    let ceiling = Bodies.rectangle(0, 0, 2800, 100, { isStatic: true });
     World.add(engine.world, ceiling);
-    let leftWall = Bodies.rectangle(0, 800, 20, 800, { isStatic: true });
+    let leftWall = Bodies.rectangle(0, 0, 100, 1800, { isStatic: true });
     World.add(engine.world, leftWall);
-    let rightWall = Bodies.rectangle(1000, 0, 20, 800, { isStatic: true });
+    let rightWall = Bodies.rectangle(1400, 0, 100, 1800, { isStatic: true });
     World.add(engine.world, rightWall);
 
     // runner
