@@ -15,30 +15,9 @@
 <body>
     <div>Hello</div>
     <div class="hidden">
-        <img id="body_eva" src="./images/eva.png" />
+        <img id="body_eva" src="" />
     </div>
-    <script>
-        var img = document.getElementById('body_eva');
-        img.onload = function () {
-            var canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
-
-            var pixelData = canvas.getContext('2d').getImageData(0, 0, img.width, img.height).data;
-            console.log(pixelData);
-            var points = [];
-            for (var x = 0; x < img.width; x++) {
-                for (var y = 0; y < img.height; y++) {
-                    var alpha = pixelData[4 * y * img.width + x + 3];
-                    if (alpha > 0) {
-                        points.push([x, y]);
-                    }
-                }
-            }
-            console.log(points);
-        }
-    </script>
+    <script src="index.js"></script>
 </body>
 
 </html>
