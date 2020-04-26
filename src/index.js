@@ -109,11 +109,14 @@ function addBody(src, startX, startY) {
     img.src = src;
 }
 
-const START_X = 200;
-const DIST = 200;
+const START_X = 160;
+const DIST = 175;
 const START_Y = 630;
 
 addBody('./images/eva.png', START_X, START_Y);
 addBody('./images/natalle.png', START_X + DIST, START_Y);
 addBody('./images/yishiuan.png', START_X + 2 * DIST, START_Y);
 addBody('./images/becky.png', START_X + 3 * DIST, START_Y);
+addBody('./images/kevin.png', START_X + 4 * DIST, START_Y);
+addBody('./images/michael.png', START_X + 5 * DIST, START_Y);
+addBody('./images/tommy.png', START_X + 6 * DIST, START_Y);
