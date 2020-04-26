@@ -1,4 +1,8 @@
-import concaveman from 'concaveman';
+import convexHull from 'monotone-convex-hull-2d';
+import decomp from 'poly-decomp';
+import Matter from 'matter-js';
+
+window.decomp = decomp;
 
 var img = document.getElementById('body_eva');
 img.onload = function () {
@@ -8,7 +12,6 @@ img.onload = function () {
     canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
 
     var pixelData = canvas.getContext('2d').getImageData(0, 0, img.width, img.height).data;
-    console.log(img.width + " " + img.height + " " + pixelData.length);
     var points = [];
     for (var x = 0; x < img.width; x++) {
         for (var y = 0; y < img.height; y++) {
@@ -19,27 +22,37 @@ img.onload = function () {
         }
     }
 
-    var polygon = concaveman(points);
+    var indices = convexHull(points);
+    let polygon = [];
+    for (var i = 0; i < indices.length; i++) {
+        polygon.push({ x: points[indices[i]][0], y: points[indices[i]][1] });
+    }
 
-    // debug
-    var sketchpad = document.createElement('canvas');
-    sketchpad.width = img.width;
-    sketchpad.height = img.height;
-    var ctx = sketchpad.getContext('2d');
-    ctx.drawImage(canvas, 0, 0);
-    /*
-    ctx.fillStyle = 'orange';
-    for (var i = 0; i < points.length; i++) {
-        ctx.fillRect(points[i][0], points[i][1], 1, 1);
-    }
-    */
-    ctx.beginPath();
-    ctx.moveTo(polygon[0][0], polygon[0][1]);
-    for (var i = 1; i < polygon.length; i++) {
-        ctx.lineTo(polygon[i][0], polygon[i][1]);
-    }
-    ctx.closePath();
-    ctx.stroke();
-    document.body.appendChild(sketchpad);
+    let engine = Matter.Engine.create();
+
+    // render
+    let render = Matter.Render.create({
+        element: document.getElementById('playground'),
+        engine: engine,
+        options: {
+            width: 1000,
+            height: 800,
+            wireframes: false
+        }
+    });
+    Matter.Render.run(render);
+
+    // runner
+    let runner = Matter.Runner.create();
+    Matter.Runner.run(runner, engine);
+
+    let body = Matter.Bodies.fromVertices(100, 100, polygon, {
+        render: {
+            sprite: {
+                texture: './images/eva.png'
+            }
+        }
+    });
+    Matter.World.add(engine.world, body);
 }
 img.src = "./images/eva.png";

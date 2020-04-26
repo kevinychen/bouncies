@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "concaveman": "^1.1.1"
+    "concaveman": "^1.1.1",
+    "matter-js": "^0.14.2",
+    "poly-decomp": "^0.3.0"
   },
   "devDependencies": {
     "webpack": "^4.43.0",
