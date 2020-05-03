@@ -13,7 +13,7 @@ import {
 
 window.decomp = decomp;
 
-const WIDTH = 1400;
+const WIDTH = 1800;
 const HEIGHT = 800;
 const SCALE = 0.4;
 const WALL = 100; // thickness
@@ -45,6 +45,9 @@ World.add(engine.world, leftWall);
 let rightWall = Bodies.rectangle(WIDTH, 0, WALL, 2 * HEIGHT, { isStatic: true });
 World.add(engine.world, rightWall);
 
+let rock = Bodies.rectangle(WIDTH - 100, HEIGHT / 2, 50, 50);
+World.add(engine.world, rock);
+
 var mouse = Mouse.create(render.canvas);
 var mouseConstraint = MouseConstraint.create(engine, {
     mouse: mouse,
@@ -59,14 +62,16 @@ render.mouse = mouse;
 World.add(engine.world, mouseConstraint);
 
 // play sounds when people get hit
-const audios = PEOPLE.map(person => new Audio());
+const audios = PEOPLE.map(_ => new Audio());
 Events.on(engine, 'collisionStart', function(event) {
-    const name = event.pairs[0].bodyA.label;
-    const index = PEOPLE.indexOf(name);
-    if (index !== -1) {
+    const { bodyA, bodyB } = event.pairs[0];
+    // assume slower body is the one that gets hit
+    const slowerBody = bodyA.speed < bodyB.speed ? bodyA : bodyB;
+    const index = PEOPLE.indexOf(slowerBody.label);
+    if (index != -1) {
         const audio = audios[index];
         if (audio.paused) {
-            audio.src = `./audio/${name}.mp3`;
+            audio.src = `./audio/${PEOPLE[index]}.mp3`;
             audio.currentTime = 0;
             audio.play();
         }
@@ -131,5 +136,5 @@ function addBody(name, startX, startY) {
 }
 
 for (var i = 0; i < PEOPLE.length; i++) {
-    addBody(PEOPLE[i], 160 + i * 175, 630);
+    addBody(PEOPLE[i], 160 + i * 235, 630);
 }
