@@ -3,6 +3,7 @@ import decomp from 'poly-decomp';
 import {
     Bodies,
     Engine,
+    Events,
     Mouse,
     MouseConstraint,
     Render,
@@ -16,6 +17,8 @@ const WIDTH = 1400;
 const HEIGHT = 800;
 const SCALE = 0.4;
 const WALL = 100; // thickness
+
+const PEOPLE = ['eva', 'natalle', 'yishiuan', 'becky', 'kevin', 'michael', 'tommy'];
 
 let engine = Engine.create();
 
@@ -55,11 +58,27 @@ var mouseConstraint = MouseConstraint.create(engine, {
 render.mouse = mouse;
 World.add(engine.world, mouseConstraint);
 
+// play sounds when people get hit
+const audios = PEOPLE.map(person => new Audio());
+Events.on(engine, 'collisionStart', function(event) {
+    const name = event.pairs[0].bodyA.label;
+    const index = PEOPLE.indexOf(name);
+    if (index !== -1) {
+        const audio = audios[index];
+        if (audio.paused) {
+            audio.src = `./audio/${name}.mp3`;
+            audio.currentTime = 0;
+            audio.play();
+        }
+    }
+});
+
 // runner
 let runner = Runner.create();
 Runner.run(runner, engine);
 
-function addBody(src, startX, startY) {
+function addBody(name, startX, startY) {
+    const src = `./images/${name}.png`;
     var img = document.createElement('img');
     img.onload = function () {
         var canvas = document.createElement('canvas');
@@ -97,6 +116,7 @@ function addBody(src, startX, startY) {
         }
 
         let body = Bodies.fromVertices(startX, startY, polygon, {
+            label: name,
             render: {
                 sprite: {
                     texture: src,
@@ -110,14 +130,6 @@ function addBody(src, startX, startY) {
     img.src = src;
 }
 
-const START_X = 160;
-const DIST = 175;
-const START_Y = 630;
-
-addBody('./images/eva.png', START_X, START_Y);
-addBody('./images/natalle.png', START_X + DIST, START_Y);
-addBody('./images/yishiuan.png', START_X + 2 * DIST, START_Y);
-addBody('./images/becky.png', START_X + 3 * DIST, START_Y);
-addBody('./images/kevin.png', START_X + 4 * DIST, START_Y);
-addBody('./images/michael.png', START_X + 5 * DIST, START_Y);
-addBody('./images/tommy.png', START_X + 6 * DIST, START_Y);
+for (var i = 0; i < PEOPLE.length; i++) {
+    addBody(PEOPLE[i], 160 + i * 175, 630);
+}
